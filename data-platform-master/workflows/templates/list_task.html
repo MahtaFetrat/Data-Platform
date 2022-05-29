@@ -1,0 +1,79 @@
+{% extends 'data_platform/basic.html' %}
+{% load static %}
+
+{% block head %}
+<style>li {
+    font-size: 17px;
+    list-style: none;
+    margin: 15px auto;
+}
+
+</style>
+{% endblock %}
+
+{% block title %}Tasks{% endblock %}
+
+{% block body %}
+{% if  tasks %}
+<h1>Tasks<br></h1>
+<br>
+
+<table class="ui very basic table">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Last Execution</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for task in tasks reversed %}
+    <tr>
+        <td>
+            <i class="check left aligned icon"></i>
+            <a class="header" href="{{ task.pk }}/">{{ task.name }}</a>
+        </td>
+        <td>{{ task.get_task_type_display }}</td>
+        {% if task.taskexecution_set.last %}
+        <td>
+            {% with task_execution_status=status|get_value:task.taskexecution_set.last.status %}
+            <a class="header" href="executions/{{ task.taskexecution_set.last }}/">
+                <div class="column"
+                    style=" margin: 5px; border-radius: 50%; width: 20px; height: 20px;
+                            background-color: {{ task_execution_status.color }}"
+                    title="status: {{ task_execution_status.text }}">
+                </div>
+            </a>
+            {% endwith %}
+        {% else %}
+        <td>N/A</td>
+        {% endif %}
+        <td>
+            <span style="margin: 10px 2px;">
+                <a href="{% url 'workflows:delete_task' task.id %}" class="negative ui icon button"
+                    data-tooltip="Delete Task">
+                    <i class="trash middle aligned icon"></i>
+                </a>
+            </span>
+        </td>
+    {% endfor %}
+    </tbody>
+</table>
+
+<br>
+
+{% include 'data_platform/pagination.html' %}
+
+{% else %}
+<h2>No tasks available.</h2>
+{% endif %}
+
+<br>
+
+<a href="{% url 'workflows:create_task' %}">add new task</a>
+<br>
+
+
+{% endblock %}
+
