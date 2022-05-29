@@ -1,0 +1,24 @@
+{% extends 'data_platform/basic.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'users/styles/basic_form.css' %}">
+
+{% endblock %}
+
+{% block title %}Signup{% endblock %}
+
+{% block body %}
+
+
+<div class="ui center aligned page grid segment">
+    <form id='form' action="{% url 'users:signup' %}" method="post" class="ui form">
+        {% csrf_token %}
+        {% include 'registration/basic_form.html' with form=form title='Signup' submit_value='Signup'%}
+        <p>Have an account?  <a href="{% url 'users:login' %}">Login here.</a></p>
+    </form>
+</div>
+
+
+{% endblock %}
+

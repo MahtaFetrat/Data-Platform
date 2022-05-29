@@ -1,0 +1,37 @@
+{% extends 'data_platform/basic.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'users/styles/basic_form.css' %}">
+{% endblock %}
+
+{% block title %}Login{% endblock %}
+
+{% block body %}
+
+
+{% if next %}
+{% if user.is_authenticated %}
+<p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+{% else %}
+<p>Please login to see this page.</p>
+{% endif %}
+{% endif %}
+
+<div class="ui center aligned page grid segment">
+    <form method="post" action="{% url 'users:login' %}" class="ui form">
+        {% csrf_token %}
+        {% include 'registration/basic_form.html' with form=form title='Login' submit_value='Login'%}
+        <input type="hidden" name="next" value="{{ next }}">
+        <p>Don't have an account?
+            <a href="{% url 'users:signup' %}">Sign up</a></p>
+        <p><a href="{% url 'users:password_reset' %}">Lost password?</a></p>
+    </form>
+</div>
+
+
+{% endblock %}
+
+
+
