@@ -1,0 +1,95 @@
+{% extends 'data_platform/basic.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{%static 'notebooks/styles/detail.css' %}">
+<link rel="stylesheet" type="text/css" href="{%static 'data_platform/styles/toast.css' %}">
+<script src="{%static 'data_platform/scripts/toast.js' %}"></script>
+<script>
+const notebookId = {{ object.id }}
+const CSRFToken = `{{ csrf_token }}`
+const cellItemHtmlString = `{% include 'notebooks/cell_item.html' with id="{id_placeholder}" code="" %}`
+const cellResultHtmlString = `{% include 'notebooks/cell_result.html' with id="{id_placeholder}" %}`
+
+</script>
+<script src="{% static 'notebooks/scripts/detail.js' %}"></script>
+<link rel="stylesheet" href="{% static 'notebooks/styles/codemirror.css' %}">
+<script src="{% static 'notebooks/scripts/codemirror.js' %}"></script>
+<script src="{% static 'notebooks/scripts/python.js' %}"></script>
+{% endblock %}
+
+{% block title %}Notebook{% endblock %}
+
+
+{% block full_width_body %}
+
+<div class="ui active dimmer" id="page-loading">
+    <div class="ui loader"></div>
+</div>
+
+
+<div id="split-pane">
+    <div id="side-pane">
+        <div class="ui form">
+            <h4>Code snippets:</h4>
+            <div class="fields">
+                <div class="field">
+                    <div class="ui selection dropdown">
+                        <div class="default text">Select code snippet...</div>
+                        <i class="dropdown icon"></i>
+                    </div>
+                </div>
+                <button class="ui button" onclick="addSnippet()">Add</button>
+            </div>
+        </div>
+
+        {% if accessible_datasets %}
+        <br><hr><br>
+        <div class="ui form">
+            <h4>Accessible Datasets:</h4>
+                <div class="ui divided selection list">
+                {% for dataset_name,dataset_mount_path in accessible_datasets.items %}
+                    <a class="item">
+                        <div class="ui horizontal label">{{dataset_name}}</div>
+                        <input type="text" class="copyInput" value="{{dataset_mount_path}}">
+                    </a>
+                {% endfor %}
+                </div>
+        </div>
+        {% endif %}
+    </div>
+
+
+    <div id="main-pane">
+        <div class="toolbar">
+            <h1>{{ object.name | title }}</h1>
+
+            <div class="filler"></div>
+
+            <button class="ui icon button" data-tooltip="Add new cell" onclick="addCell('')">
+                <i class="plus icon"></i>
+            </button>
+            <button class="ui icon button" data-tooltip="Factory reset" onclick="restartSession()">
+                <i class="sync alternate icon" id="restart-session-icon" ></i>
+            </button>
+            <a class="ui icon button" data-tooltip="Export notebook as task" href="{% url 'notebooks:export' object.id %}">
+                <i class="share square icon"></i>
+            </a>
+            <a class="ui icon negative button" data-tooltip="Delete notebook"
+               href="{% url 'notebooks:delete' object.id %}">
+                <i class="trash alternate icon"></i>
+            </a>
+        </div>
+
+        <div class="cell-list">
+            {% for cell in object.cells.all %}
+            {% include 'notebooks/cell_item.html' with id=cell.id code=cell.code %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+
+{% endblock %}

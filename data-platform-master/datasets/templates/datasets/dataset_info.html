@@ -1,0 +1,26 @@
+<div class="about">
+    <h4 style="align-self: flex-start; margin-top: -10px;"><a href="{% url 'datasets:index' %}">Back to list</a></h4>
+    <a class="edit_link" href="{% url 'datasets:edit' dataset.id %}" data-tooltip="Edit this dataset">
+        <i class="edit icon"></i>
+    </a>
+
+    <h3>About this dataset</h3>
+    <h4>{{ dataset.title | title }}</h4>
+    <h5> {{ dataset.description }}</h5>
+{% if dataset.is_public == True %}
+    <small>Public dataset</small>
+{% else %}
+    <small>Private dataset</small>
+{% endif %}
+    <br>
+    <small>
+        Created by:
+        {% if dataset.creator.get_full_name %}
+            {{ dataset.creator.get_full_name }}
+        {% else %}
+            {{ dataset.creator.username }}
+        {% endif %}
+    </small>
+    <br>
+    <small>Date Created: {{ dataset.date_created }}</small><br>
+</div>
